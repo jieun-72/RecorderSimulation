@@ -1,0 +1,49 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Subsystems/GameInstanceSubsystem.h"
+#include "GradingSubsystem.generated.h"
+
+USTRUCT(BlueprintType)
+struct FDayAnswerSet
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int32 Day;
+
+	UPROPERTY()
+	TArray<FString> Answers;
+};
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDayGraded, int32, DayScore);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDayStartReady);
+
+UCLASS()
+class RECORDERSIMULATION_API UGradingSubsystem : public UGameInstanceSubsystem
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+
+	UFUNCTION(BlueprintCallable)
+	int32 GradeDay(int32 DayIndex, const TArray<FString>& UserKeywords);
+
+	UFUNCTION(BlueprintCallable)
+	void DayStartReady();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnDayGraded OnDayGraded;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnDayStartReady OnDayStartReady;
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetAnswerCountByDay(int32 DayIndex) const;
+
+private:
+	UPROPERTY()
+	TArray<FDayAnswerSet> DayAnswerSets;
+};
