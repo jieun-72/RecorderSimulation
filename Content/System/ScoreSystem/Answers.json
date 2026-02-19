@@ -1,0 +1,25 @@
+{
+    "Days": [
+        {
+            "Day": 1,
+            "Answers": [
+                "democracy",
+                "constitution"
+            ]
+        },
+        {
+            "Day": 2,
+            "Answers": [
+                "industrial revolution",
+                "factory"
+            ]
+        },
+        {
+            "Day": 3,
+            "Answers": [
+                "world war",
+                "alliance"
+            ]
+        }
+    ]
+}
