@@ -4,16 +4,24 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GradingSubsystem.generated.h"
 
-USTRUCT(BlueprintType)
-struct FDayAnswerSet
+USTRUCT()
+struct FKeywordData
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	int32 Day;
+	FString Keyword;
+	TArray<FString> ContextHints;
+	int32 KeywordScore;
+	int32 ContextScore;
+};
 
-	UPROPERTY()
-	TArray<FString> Answers;
+USTRUCT()
+struct FDayData
+{
+	GENERATED_BODY()
+
+	int32 DayID;
+	TArray<FKeywordData> Keywords;
 };
 
 
@@ -45,5 +53,5 @@ public:
 
 private:
 	UPROPERTY()
-	TArray<FDayAnswerSet> DayAnswerSets;
+	TArray<FDayData> DayDataSets;
 };

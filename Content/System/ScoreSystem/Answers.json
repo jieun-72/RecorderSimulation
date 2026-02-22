@@ -1,25 +1,32 @@
 {
-    "Days": [
+  "Days": [
+    {
+      "DayID": 1,
+      "Keywords": [
         {
-            "Day": 1,
-            "Answers": [
-                "democracy",
-                "constitution"
-            ]
+          "Keyword": "기억",
+          "ContextHints": ["저장", "회상", "과거"],
+          "KeywordScore": 10,
+          "ContextScore": 5
         },
         {
-            "Day": 2,
-            "Answers": [
-                "industrial revolution",
-                "factory"
-            ]
-        },
-        {
-            "Day": 3,
-            "Answers": [
-                "world war",
-                "alliance"
-            ]
+          "Keyword": "무의식",
+          "ContextHints": ["잠재", "꿈", "의식"],
+          "KeywordScore": 10,
+          "ContextScore": 5
         }
-    ]
+      ]
+    },
+    {
+      "DayID": 2,
+      "Keywords": [
+        {
+          "Keyword": "감정",
+          "ContextHints": ["느낌", "표현"],
+          "KeywordScore": 10,
+          "ContextScore": 5
+        }
+      ]
+    }
+  ]
 }
