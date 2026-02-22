@@ -4,14 +4,14 @@
       "DayID": 1,
       "Keywords": [
         {
-          "Keyword": "기억",
-          "ContextHints": ["저장", "회상", "과거"],
+          "Keyword": "아기",
+          "ContextHints": ["울", "우"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "무의식",
-          "ContextHints": ["잠재", "꿈", "의식"],
+          "Keyword": "소",
+          "ContextHints": ["뒤집"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
@@ -21,8 +21,8 @@
       "DayID": 2,
       "Keywords": [
         {
-          "Keyword": "감정",
-          "ContextHints": ["느낌", "표현"],
+          "Keyword": "피",
+          "ContextHints": ["흐르", "벽"],
           "KeywordScore": 10,
           "ContextScore": 5
         }

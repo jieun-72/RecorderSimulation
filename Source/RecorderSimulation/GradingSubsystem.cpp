@@ -1,4 +1,4 @@
-#include "GradingSubsystem.h"
+Ôªø#include "GradingSubsystem.h"
 
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -96,42 +96,39 @@ int32 UGradingSubsystem::GradeDay(int32 DayIndex, const TArray<FString>& UserInp
 
 	TSet<FString> CountedKeywords;
 
-	// √÷¥Î ¡°ºˆ ∞ËªÍ (Context¥¬ 1»∏ ±‚¡ÿ)
+	// ÏµúÎåÄ Ï†êÏàò Í≥ÑÏÇ∞ (ContextÎäî 1Ìöå Í∏∞Ï§Ä)
 	for (const FKeywordData& KeywordData : FoundDay->Keywords)
 	{
 		MaxScore += KeywordData.KeywordScore;
 		MaxScore += KeywordData.ContextScore;
 	}
 
-	// ¿‘∑¬√¢ ¥‹¿ß∑Œ ∆Ú∞°
+	// ÏûÖÎ†•Ï∞Ω Îã®ÏúÑÎ°ú ÌèâÍ∞Ä
 	for (FString UserInput : UserInputs)
 	{
-		UserInput.ReplaceInline(TEXT(" "), TEXT(""));
+		UserInput = UserInput.TrimStartAndEnd();
 		UserInput = UserInput.ToLower();
 
 		for (const FKeywordData& KeywordData : FoundDay->Keywords)
 		{
-			FString CleanKeyword = KeywordData.Keyword;
-			CleanKeyword.ReplaceInline(TEXT(" "), TEXT(""));
+			FString CleanKeyword = KeywordData.Keyword.TrimStartAndEnd().ToLower();
 			CleanKeyword = CleanKeyword.ToLower();
 
-			// ¿ÃπÃ ¡°ºˆ ¡·¿∏∏È Ω∫≈µ
+			// Ïù¥ÎØ∏ Ï†êÏàò Ï§¨ÏúºÎ©¥ Ïä§ÌÇµ
 			if (CountedKeywords.Contains(CleanKeyword))
 				continue;
 
-			// ∞∞¿∫ ¿‘∑¬√¢ æ»ø° Keyword ¿÷¥¬¡ˆ »Æ¿Œ
-			if (UserInput.Contains(CleanKeyword))
+			// Í∞ôÏùÄ ÏûÖÎ†•Ï∞Ω ÏïàÏóê Keyword ÏûàÎäîÏßÄ ÌôïÏù∏
+			if (ContainsWholeWordKorean(UserInput, CleanKeyword))
 			{
 				RawScore += KeywordData.KeywordScore;
 
-				// ∞∞¿∫ ¿‘∑¬√¢ æ»ø°º≠ Context OR ∞ÀªÁ
+				// Í∞ôÏùÄ ÏûÖÎ†•Ï∞Ω ÏïàÏóêÏÑú Context OR Í≤ÄÏÇ¨
 				bool bContextMatched = false;
 
 				for (const FString& Hint : KeywordData.ContextHints)
 				{
-					FString CleanHint = Hint;
-					CleanHint.ReplaceInline(TEXT(" "), TEXT(""));
-					CleanHint = CleanHint.ToLower();
+					FString CleanHint = Hint.TrimStartAndEnd().ToLower();
 
 					if (UserInput.Contains(CleanHint))
 					{
@@ -180,4 +177,79 @@ int32 UGradingSubsystem::GetAnswerCountByDay(int32 DayIndex) const
 		return 0;
 
 	return FoundDay->Keywords.Num();
+}
+
+
+bool UGradingSubsystem::IsKoreanChar(TCHAR Char)
+{
+	return (Char >= 0xAC00 && Char <= 0xD7A3);
+}
+
+bool UGradingSubsystem::IsAllowedPostChar(TCHAR Char)
+{
+	static TSet<TCHAR> Allowed =
+	{
+		TEXT('ÏùÄ'), TEXT('Îäî'), TEXT('Ïù¥'), TEXT('Í∞Ä'),
+		TEXT('ÏùÑ'), TEXT('Î•º'), TEXT('ÏôÄ'), TEXT('Í≥º'),
+		TEXT('ÎèÑ'), TEXT('Î°ú'), TEXT('Ïóê')
+	};
+
+	return Allowed.Contains(Char);
+}
+
+bool UGradingSubsystem::IsWordBoundary(TCHAR Char)
+{
+	// Í≥µÎ∞±
+	if (FChar::IsWhitespace(Char))
+		return true;
+
+	// Î¨∏Ïû• Î∂ÄÌò∏
+	if (Char == TEXT('.') || Char == TEXT(',') ||
+		Char == TEXT('!') || Char == TEXT('?') ||
+		Char == TEXT('"') || Char == TEXT('\''))
+		return true;
+
+	return false;
+}
+
+bool UGradingSubsystem::ContainsWholeWordKorean(const FString& Text, const FString& Keyword)
+{
+	int32 StartIndex = Text.Find(Keyword);
+
+	if (StartIndex == INDEX_NONE)
+		return false;
+
+	int32 EndIndex = StartIndex + Keyword.Len();
+
+	// Ïïû Í≤ΩÍ≥Ñ Ï≤¥ÌÅ¨
+	if (Text.IsValidIndex(StartIndex - 1))
+	{
+		TCHAR PrevChar = Text[StartIndex - 1];
+
+		if (!IsWordBoundary(PrevChar))
+		{
+			return false;
+		}
+	}
+
+	// Îí§ Í≤ΩÍ≥Ñ Ï≤¥ÌÅ¨
+	if (Text.IsValidIndex(EndIndex))
+	{
+		TCHAR NextChar = Text[EndIndex];
+
+		// Ï°∞ÏÇ¨ ÌóàÏö©
+		if (IsKoreanChar(NextChar))
+		{
+			if (!IsAllowedPostChar(NextChar))
+			{
+				return false;
+			}
+		}
+		else if (!IsWordBoundary(NextChar))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }

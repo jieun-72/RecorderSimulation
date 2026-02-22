@@ -54,4 +54,9 @@ public:
 private:
 	UPROPERTY()
 	TArray<FDayData> DayDataSets;
+
+	static bool IsKoreanChar(TCHAR Char);
+	static bool IsAllowedPostChar(TCHAR Char);
+	static bool IsWordBoundary(TCHAR Char);
+	static bool ContainsWholeWordKorean(const FString& Text, const FString& Keyword);
 };
