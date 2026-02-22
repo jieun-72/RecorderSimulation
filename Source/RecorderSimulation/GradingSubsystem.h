@@ -56,7 +56,9 @@ private:
 	TArray<FDayData> DayDataSets;
 
 	static bool IsKoreanChar(TCHAR Char);
-	static bool IsAllowedPostChar(TCHAR Char);
+	static bool IsAllowedParticle(TCHAR Char);
 	static bool IsWordBoundary(TCHAR Char);
 	static bool ContainsWholeWordKorean(const FString& Text, const FString& Keyword);
+	static bool ContainsWholeWordFlexible(const FString& Text, const FString& Keyword);
+	static bool ContainsContextFlexible(const FString& Text, const FString& Hint);
 };

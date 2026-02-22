@@ -106,31 +106,27 @@ int32 UGradingSubsystem::GradeDay(int32 DayIndex, const TArray<FString>& UserInp
 	// 입력창 단위로 평가
 	for (FString UserInput : UserInputs)
 	{
-		UserInput = UserInput.TrimStartAndEnd();
-		UserInput = UserInput.ToLower();
+		UserInput = UserInput.TrimStartAndEnd().ToLower();
 
 		for (const FKeywordData& KeywordData : FoundDay->Keywords)
 		{
 			FString CleanKeyword = KeywordData.Keyword.TrimStartAndEnd().ToLower();
-			CleanKeyword = CleanKeyword.ToLower();
 
 			// 이미 점수 줬으면 스킵
 			if (CountedKeywords.Contains(CleanKeyword))
 				continue;
 
-			// 같은 입력창 안에 Keyword 있는지 확인
-			if (ContainsWholeWordKorean(UserInput, CleanKeyword))
+			if (ContainsWholeWordFlexible(UserInput, CleanKeyword))
 			{
 				RawScore += KeywordData.KeywordScore;
 
-				// 같은 입력창 안에서 Context OR 검사
 				bool bContextMatched = false;
 
 				for (const FString& Hint : KeywordData.ContextHints)
 				{
 					FString CleanHint = Hint.TrimStartAndEnd().ToLower();
 
-					if (UserInput.Contains(CleanHint))
+					if (ContainsContextFlexible(UserInput, CleanHint))
 					{
 						bContextMatched = true;
 						break;
@@ -185,7 +181,7 @@ bool UGradingSubsystem::IsKoreanChar(TCHAR Char)
 	return (Char >= 0xAC00 && Char <= 0xD7A3);
 }
 
-bool UGradingSubsystem::IsAllowedPostChar(TCHAR Char)
+bool UGradingSubsystem::IsAllowedParticle(TCHAR Char)
 {
 	static TSet<TCHAR> Allowed =
 	{
@@ -211,6 +207,8 @@ bool UGradingSubsystem::IsWordBoundary(TCHAR Char)
 
 	return false;
 }
+
+
 
 bool UGradingSubsystem::ContainsWholeWordKorean(const FString& Text, const FString& Keyword)
 {
@@ -240,7 +238,7 @@ bool UGradingSubsystem::ContainsWholeWordKorean(const FString& Text, const FStri
 		// 조사 허용
 		if (IsKoreanChar(NextChar))
 		{
-			if (!IsAllowedPostChar(NextChar))
+			if (!IsAllowedParticle(NextChar))
 			{
 				return false;
 			}
@@ -252,4 +250,69 @@ bool UGradingSubsystem::ContainsWholeWordKorean(const FString& Text, const FStri
 	}
 
 	return true;
+}
+
+bool UGradingSubsystem::ContainsWholeWordFlexible(const FString& Text, const FString& Keyword)
+{
+	FString CleanKeyword = Keyword.TrimStartAndEnd().ToLower();
+
+	// 일반 문장 기준 검사
+	if (ContainsWholeWordKorean(Text, CleanKeyword))
+	{
+		return true;
+	}
+
+	// 공백 제거한 버전 검사
+	FString NoSpaceText = Text;
+	NoSpaceText.ReplaceInline(TEXT(" "), TEXT(""));
+
+	int32 StartIndex = NoSpaceText.Find(CleanKeyword);
+	if (StartIndex == INDEX_NONE)
+		return false;
+
+	int32 EndIndex = StartIndex + CleanKeyword.Len();
+
+	// 앞 검사
+	//if (NoSpaceText.IsValidIndex(StartIndex - 1))
+	//{
+	//	TCHAR PrevChar = NoSpaceText[StartIndex - 1];
+
+	//	// 앞이 한글이면 단어 내부일 가능성 높음 → 차단
+	//	if (IsKoreanChar(PrevChar) && !IsAllowedParticle(PrevChar))
+	//	{
+	//		return false;
+	//	}
+	//}
+
+	// 뒤 검사
+	if (NoSpaceText.IsValidIndex(EndIndex))
+	{
+		TCHAR NextChar = NoSpaceText[EndIndex];
+
+		if (IsKoreanChar(NextChar) && !IsAllowedParticle(NextChar))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool UGradingSubsystem::ContainsContextFlexible(const FString& Text, const FString& Hint)
+{
+	FString NormalText = Text.ToLower();
+	FString CleanHint = Hint.ToLower();
+
+	if (CleanHint.Len() < 2)
+		return false; // 1글자 힌트는 오탐 위험
+
+	// 공백 포함 검사
+	if (NormalText.Contains(CleanHint))
+		return true;
+
+	// 공백 제거 검사
+	FString NoSpaceText = NormalText;
+	NoSpaceText.ReplaceInline(TEXT(" "), TEXT(""));
+
+	return NoSpaceText.Contains(CleanHint);
 }

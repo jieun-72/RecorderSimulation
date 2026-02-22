@@ -5,13 +5,13 @@
       "Keywords": [
         {
           "Keyword": "아기",
-          "ContextHints": ["울", "우"],
+          "ContextHints": ["울고", "우는", "울다", "울었"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
           "Keyword": "소",
-          "ContextHints": ["뒤집"],
+          "ContextHints": ["뒤집힌", "뒤집혀", "거꾸로"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
@@ -22,7 +22,7 @@
       "Keywords": [
         {
           "Keyword": "피",
-          "ContextHints": ["흐르", "벽"],
+          "ContextHints": ["흐르", "벽에"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
