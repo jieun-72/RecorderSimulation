@@ -51,7 +51,7 @@ int32 UGradingSubsystem::GradeDay(int32 DayIndex, const TArray<FString>& UserKey
 {
 	int32 Score = 0;
 
-	// ÇØ´ç Day Á¤´ä Ã£±â
+	// ï¿½Ø´ï¿½ Day ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½
 	const FDayAnswerSet* FoundSet = DayAnswerSets.FindByPredicate(
 		[DayIndex](const FDayAnswerSet& Set)
 		{
@@ -65,10 +65,10 @@ int32 UGradingSubsystem::GradeDay(int32 DayIndex, const TArray<FString>& UserKey
 		return 0;
 	}
 
-	// Áßº¹ Á¡¼ö ¹æÁö¿ë
+	// ï¿½ßºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	TSet<FString> CountedKeywords;
 
-	// 3Ã¤Á¡
+	// 3Ã¤ï¿½ï¿½
 	for (const FString& UserInput : UserKeywords)
 	{
 		for (const FString& Correct : FoundSet->Answers)
@@ -82,7 +82,7 @@ int32 UGradingSubsystem::GradeDay(int32 DayIndex, const TArray<FString>& UserKey
 		}
 	}
 
-	// °á°ú ºê·ÎµåÄ³½ºÆ®
+	// ï¿½ï¿½ï¿½ ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ®
 	OnDayGraded.Broadcast(Score);
 
 	return Score;
