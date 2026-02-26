@@ -1,25 +1,32 @@
 {
-    "Days": [
+  "Days": [
+    {
+      "DayID": 1,
+      "Keywords": [
         {
-            "Day": 1,
-            "Answers": [
-                "democracy",
-                "constitution"
-            ]
+          "Keyword": "아기",
+          "ContextHints": ["울고", "우는", "울다", "울었"],
+          "KeywordScore": 10,
+          "ContextScore": 5
         },
         {
-            "Day": 2,
-            "Answers": [
-                "industrial revolution",
-                "factory"
-            ]
-        },
-        {
-            "Day": 3,
-            "Answers": [
-                "world war",
-                "alliance"
-            ]
+          "Keyword": "소",
+          "ContextHints": ["뒤집힌", "뒤집혀", "거꾸로"],
+          "KeywordScore": 10,
+          "ContextScore": 5
         }
-    ]
+      ]
+    },
+    {
+      "DayID": 2,
+      "Keywords": [
+        {
+          "Keyword": "피",
+          "ContextHints": ["흐르", "벽에"],
+          "KeywordScore": 10,
+          "ContextScore": 5
+        }
+      ]
+    }
+  ]
 }
