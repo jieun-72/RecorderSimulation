@@ -37,7 +37,7 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	UFUNCTION(BlueprintCallable)
-	int32 GradeDay(int32 DayIndex, const TArray<FString>& UserKeywords);
+	int32 GradeDay(int32 DayIndex, const TArray<FString>& UserInputs);
 
 	UFUNCTION(BlueprintCallable)
 	void DayStartReady();
@@ -55,10 +55,10 @@ private:
 	UPROPERTY()
 	TArray<FDayData> DayDataSets;
 
+	const int MAX_CONTEXT_DISTACNE = 12;
 	static bool IsKoreanChar(TCHAR Char);
-	static bool IsAllowedParticle(TCHAR Char);
+	static bool HasValidParticle(const FString& Text, int32 EndIndex);
 	static bool IsWordBoundary(TCHAR Char);
-	static bool ContainsWholeWordKorean(const FString& Text, const FString& Keyword);
-	static bool ContainsWholeWordFlexible(const FString& Text, const FString& Keyword);
-	static bool ContainsContextFlexible(const FString& Text, const FString& Hint);
+	static bool ContainsWholeWordKorean(const FString& Word, const FString& Keyword);
+	static int32 CountOccurrences(const FString& Text, const FString& Word);
 };
