@@ -60,5 +60,5 @@ private:
 	static bool HasValidParticle(const FString& Text, int32 EndIndex);
 	static bool IsWordBoundary(TCHAR Char);
 	static bool ContainsWholeWordKorean(const FString& Word, const FString& Keyword);
-	static int32 CountOccurrences(const FString& Text, const FString& Word);
+	static int32 CountOccurrences(const FString& Text, const FString& Keyword);
 };
