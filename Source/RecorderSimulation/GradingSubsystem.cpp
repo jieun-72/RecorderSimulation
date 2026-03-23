@@ -79,22 +79,21 @@ void UGradingSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 int32 UGradingSubsystem::GradeDay(int32 DayIndex, const TArray<FString>& UserInputs)
 {
-	// 해당 DayIndex에 해당하는 채점 데이터를 찾는다.
 	const FDayData* FoundDay = DayDataSets.FindByPredicate(
 		[DayIndex](const FDayData& Day)
 		{
 			return Day.DayID == DayIndex;
 		});
 
-	// 해당 일차 데이터가 없으면 점수는 0점 처리
+	// 해당 일차 데이터 없으면 0점 처리
 	if (!FoundDay)
 		return 0;
 
-	int32 RawScore = 0;   // 실제 누적 점수
-	int32 MaxScore = 0;   // 가능한 최대 점수
+	int32 RawScore = 0; // 실제 누적 점수
+	int32 MaxScore = 0; // 가능한 최대 점수
 
 	// 해당 일차에 존재하는 모든 키워드의 최대 점수를 계산
-	// 키워드 점수 + 문맥 점수를 모두 더해 최대 점수를 만든다
+	// 키워드 점수 + 문맥 점수를 모두 더해 최대 점수를 만듦
 	for (const FKeywordData& KeywordData : FoundDay->Keywords)
 	{
 		MaxScore += KeywordData.KeywordScore;
@@ -105,24 +104,32 @@ int32 UGradingSubsystem::GradeDay(int32 DayIndex, const TArray<FString>& UserInp
 	// 동일 키워드가 여러 입력창에 등장해도 한 번만 점수를 주기 위해 사용
 	TSet<int32> ScoredKeywords;
 
-	// 사용자가 입력한 각 기록창을 순회하며 채점 수행
+	// 입력 전처리 미리
+	TArray<FString> CleanInputs;
 	for (const FString& InputRaw : UserInputs)
 	{
 		// 앞뒤 공백 제거 및 소문자 변환
-		FString Input = InputRaw.TrimStartAndEnd().ToLower();
+		CleanInputs.Add(InputRaw.TrimStartAndEnd().ToLower());
+	}
 
-		// 빈 입력창은 무시
+	for (const FString& Input : CleanInputs)
+	{
 		if (Input.IsEmpty())
 			continue;
 
-		int32 FoundKeywordIndex = INDEX_NONE; // 발견된 키워드 인덱스
-		int32 KeywordCount = 0;               // 해당 입력창에서 발견된 키워드 개수
+		int32 FoundKeywordIndex = INDEX_NONE;
+		int32 KeywordCount = 0;
 
-		// 현재 입력창에서 등장하는 키워드를 검사
+		// 키워드 탐색 (최소화)
 		for (int32 k = 0; k < FoundDay->Keywords.Num(); k++)
 		{
-			const FString Keyword =
-				FoundDay->Keywords[k].Keyword.TrimStartAndEnd().ToLower();
+			const FString& Keyword = FoundDay->Keywords[k].Keyword
+				.TrimStartAndEnd().ToLower();
+
+			UE_LOG(LogTemp, Warning,
+				TEXT("Checking Keyword: [%s] → %s"),
+				*Keyword,
+				ContainsWholeWordKorean(Input, Keyword) ? TEXT("FOUND") : TEXT("NOT FOUND"));
 
 			// 한국어 조사까지 고려한 단어 단위 키워드 검사
 			if (ContainsWholeWordKorean(Input, Keyword))
@@ -136,93 +143,79 @@ int32 UGradingSubsystem::GradeDay(int32 DayIndex, const TArray<FString>& UserInp
 			}
 		}
 
-		// 키워드가 정확히 1개인 경우만 채점 대상
-		// 0개 또는 2개 이상이면 해당 입력창은 0점 처리
+		UE_LOG(LogTemp, Warning, TEXT("KeywordCount: %d"), KeywordCount);
+
+		// 한 기록창에 키워드 여러 개면 점수 미부여
 		if (KeywordCount != 1)
 			continue;
 
-		// 이미 점수를 준 키워드라면 중복 채점 방지
+		// 이미 작성했던 키워드라면 점수 미부여 (중복 점수 부여 방지)
 		if (ScoredKeywords.Contains(FoundKeywordIndex))
 			continue;
 
 
 		const FKeywordData& KeywordData = FoundDay->Keywords[FoundKeywordIndex];
-		const FString Keyword = KeywordData.Keyword.ToLower();
+		const FString& Keyword = KeywordData.Keyword;
 
-		// 동일 키워드 여러 번 등장하면 입력창 무효
-		if (CountOccurrences(Input, Keyword) > 1)
+
+		// 동일 키워드 한 입력창에 여러 개 있는지 확인
+		if (CountOccurrences(Input, Keyword) > 1) {
+			UE_LOG(LogTemp, Warning, TEXT("Duplicate keyword detected → %s"), *Keyword);
+			continue;
+		}
+
+		// 입력창에서 키워드 위치 찾기
+		int32 KeywordIndex = Input.Find(Keyword);
+		if (KeywordIndex == INDEX_NONE)
 			continue;
 
 
 		bool bContextMatched = false; // 문맥 단어가 근처에 존재하는지 여부
 
-		// 입력창에서 키워드 위치 찾기
-		int32 KeywordIndex = Input.Find(Keyword);
-
-		// 해당 키워드의 문맥 힌트들을 검사
+		// Context 검사 (while 제거)
 		for (const FString& HintRaw : KeywordData.ContextHints)
 		{
 			FString Hint = HintRaw.TrimStartAndEnd().ToLower();
-
-			// 빈 문맥 단어는 무시
 			if (Hint.IsEmpty())
 				continue;
 
-			int32 SearchIndex = 0;
+			int32 ContextIndex = Input.Find(Hint);
 
-			// 입력 문자열 내에서 문맥 단어를 반복 검색
-			while (true)
+			if (ContextIndex != INDEX_NONE)
 			{
-				int32 ContextIndex = Input.Find(
-					Hint,
-					ESearchCase::IgnoreCase,
-					ESearchDir::FromStart,
-					SearchIndex);
+				if (Hint.Len() <= 1)
+					continue;
 
-				// 더 이상 문맥 단어가 발견되지 않으면 종료
-				if (ContextIndex == INDEX_NONE)
-					break;
+				UE_LOG(LogTemp, Warning, TEXT("Context Find → %s"), *Keyword);
 
-				// 키워드와 문맥 단어 사이 거리 계산
 				int32 Distance = FMath::Abs(ContextIndex - KeywordIndex);
 
-				// 거리가 일정 거리 이하이면 문맥이 가까운 것으로 판단
+				// 키워드와의 거리 차이가 너무 멀면 그 키워드에 대한 설명글이 아닌 것으로 간주해 가산점 미부여
 				if (Distance <= MAX_CONTEXT_DISTACNE)
 				{
 					bContextMatched = true;
 					break;
 				}
-
-				// 다음 위치부터 다시 검색
-				SearchIndex = ContextIndex + 1;
 			}
-
-			// 하나라도 가까운 문맥이 발견되면 추가 검사 중단
-			if (bContextMatched)
-				break;
 		}
 
-		// 키워드 점수 추가
 		RawScore += KeywordData.KeywordScore;
 
-		// 문맥이 가까운 위치에 존재하면 문맥 점수 추가
 		if (bContextMatched)
+		{
 			RawScore += KeywordData.ContextScore;
+		}
 
-		// 해당 키워드를 채점 완료 목록에 등록
 		ScoredKeywords.Add(FoundKeywordIndex);
 	}
 
 	int32 FinalScore = 0;
 
-	// 최대 점수가 존재하면 퍼센트 점수 계산
 	if (MaxScore > 0)
 	{
-		FinalScore =
-			FMath::RoundToInt((float)RawScore / (float)MaxScore * 100.f);
+		FinalScore = FMath::RoundToInt((float)RawScore / (float)MaxScore * 100.f);
 	}
 
-	// 채점 완료 이벤트 브로드캐스트
 	OnDayGraded.Broadcast(FinalScore);
 
 	return FinalScore;
@@ -306,10 +299,18 @@ bool UGradingSubsystem::ContainsWholeWordKorean(
 	const FString& Text,
 	const FString& Keyword)
 {
+	UE_LOG(LogTemp, Warning, TEXT("---- Contains Check ----"));
+	UE_LOG(LogTemp, Warning, TEXT("Text: [%s], Keyword: [%s]"), *Text, *Keyword);
+
 	int32 StartIndex = Text.Find(Keyword);
 
-	if (StartIndex == INDEX_NONE)
+	UE_LOG(LogTemp, Warning, TEXT("StartIndex: %d"), StartIndex);
+
+	if (StartIndex == INDEX_NONE) {
+		UE_LOG(LogTemp, Error, TEXT("Keyword NOT FOUND in Text"));
 		return false;
+	}
+
 
 	int32 EndIndex = StartIndex + Keyword.Len();
 
@@ -317,6 +318,11 @@ bool UGradingSubsystem::ContainsWholeWordKorean(
 	if (Text.IsValidIndex(StartIndex - 1))
 	{
 		TCHAR PrevChar = Text[StartIndex - 1];
+
+		UE_LOG(LogTemp, Warning,
+			TEXT("PrevChar: %c, IsBoundary: %d"),
+			PrevChar,
+			IsWordBoundary(PrevChar));
 
 		if (!IsWordBoundary(PrevChar))
 			return false;
@@ -331,30 +337,41 @@ bool UGradingSubsystem::ContainsWholeWordKorean(
 
 	TCHAR NextChar = Text[EndIndex];
 
+	UE_LOG(LogTemp, Warning,
+		TEXT("NextChar: %c, Boundary: %d"),
+		NextChar,
+		IsWordBoundary(NextChar));
+
 	if (IsWordBoundary(NextChar))
 		return true;
 
 	return false;
 }
 
-int32 UGradingSubsystem::CountOccurrences(const FString& Text, const FString& Word)
+int32 UGradingSubsystem::CountOccurrences(const FString& Text, const FString& Keyword)
 {
+	if (Keyword.IsEmpty() || Text.IsEmpty())
+		return 0;
+
 	int32 Count = 0;
 	int32 SearchIndex = 0;
 
-	while (true)
+	while (SearchIndex < Text.Len())
 	{
-		int32 Index = Text.Find(
-			Word,
+		int32 FoundIndex = Text.Find(
+			Keyword,
 			ESearchCase::IgnoreCase,
 			ESearchDir::FromStart,
-			SearchIndex);
+			SearchIndex
+		);
 
-		if (Index == INDEX_NONE)
+		if (FoundIndex == INDEX_NONE)
 			break;
 
 		Count++;
-		SearchIndex = Index + Word.Len();
+
+		// 다음 탐색 위치 이동 (무한 루프 방지)
+		SearchIndex = FoundIndex + Keyword.Len();
 	}
 
 	return Count;
