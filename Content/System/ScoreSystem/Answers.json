@@ -6,7 +6,7 @@
       "Keywords": [
         {
           "Keyword": "동상",
-          "ContextHints": ["움직이", "걸어"],
+          "ContextHints": ["움직", "걸어"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
@@ -18,13 +18,13 @@
         },
         {
           "Keyword": "양초",
-          "ContextHints": ["떨어지", "떨"],
+          "ContextHints": ["떨어"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
           "Keyword": "책",
-          "ContextHints": ["날아다니", "날아다닌", "떠다"],
+          "ContextHints": ["날고", "날아다", "날아", "떠있", "떠다"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
@@ -47,20 +47,20 @@
           "ContextScore": 5
         },
         {
-          "Keyword": "땅문서",
+          "Keyword": "문서",
           "ContextHints": ["흩뿌", "흩뿌려", "흩뿌린"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
           "Keyword": "소",
-          "ContextHints": ["여러", "많"],
+          "ContextHints": ["뒤집히", "뒤집힌", "뒤집었", "거꾸로", "돌아가"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
           "Keyword": "농작물",
-          "ContextHints": ["자라", "바닥"],
+          "ContextHints": ["자라","자란", "자랐", "바닥"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
@@ -72,7 +72,7 @@
         },
         {
           "Keyword": "옷",
-          "ContextHints": ["피", "피묻"],
+          "ContextHints": ["피가", "피묻", "피 묻"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
@@ -84,13 +84,13 @@
       "Keywords": [
         {
           "Keyword": "아기",
-          "ContextHints": ["울", "울음", "우는"],
+          "ContextHints": ["울고", "울음", "우는"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
           "Keyword": "발자국",
-          "ContextHints": ["아기", "작"],
+          "ContextHints": ["아기", "작은"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
@@ -126,7 +126,7 @@
         },
         {
           "Keyword": "철창",
-          "ContextHints": ["방", "둘러"],
+          "ContextHints": ["방에", "둘러"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
@@ -161,12 +161,6 @@
           "ContextScore": 5
         },
         {
-          "Keyword": "귀신",
-          "ContextHints": ["얼굴", "보이", "눈앞"],
-          "KeywordScore": 10,
-          "ContextScore": 5
-        },
-        {
           "Keyword": "서랍장",
           "ContextHints": ["닫히", "닫혀", "열리", "열려"],
           "KeywordScore": 10,
@@ -174,13 +168,13 @@
         },
         {
           "Keyword": "방",
-          "ContextHints": ["피", "피투성"],
+          "ContextHints": ["피가", "피로", "피투성", "피범벅"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
           "Keyword": "부적",
-          "ContextHints": ["문", "붙"],
+          "ContextHints": ["문에", "붙어", "붙인"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
@@ -192,7 +186,7 @@
         },
         {
           "Keyword": "허수아비",
-          "ContextHints": ["죽", "쓰러"],
+          "ContextHints": ["죽어", "죽고", "죽었", "쓰러"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
