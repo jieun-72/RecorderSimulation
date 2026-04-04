@@ -9,7 +9,7 @@ struct FKeywordData
 {
 	GENERATED_BODY()
 
-	FString Keyword;
+	TArray<FString> Keywords;
 	TArray<FString> ContextHints;
 	int32 KeywordScore;
 	int32 ContextScore;
@@ -27,6 +27,9 @@ struct FDayData
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDayGraded, int32, DayScore);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDayStartReady);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMidGraded, int32, DayScore);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMidGradeStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMidGradeSuccess);
 
 UCLASS()
 class RECORDERSIMULATION_API UGradingSubsystem : public UGameInstanceSubsystem
@@ -37,10 +40,16 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	UFUNCTION(BlueprintCallable)
-	int32 GradeDay(int32 DayIndex, const TArray<FString>& UserInputs);
+	int32 GradeDay(int32 DayIndex, const TArray<FString>& UserInputs, bool isDayEnd);
 
 	UFUNCTION(BlueprintCallable)
 	void DayStartReady();
+
+	UFUNCTION(BlueprintCallable)
+	void MidGradeStart();
+
+	UFUNCTION(BlueprintCallable)
+	void MidGradeSuccess();
 
 	UPROPERTY(BlueprintAssignable)
 	FOnDayGraded OnDayGraded;
@@ -48,12 +57,25 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnDayStartReady OnDayStartReady;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnMidGraded OnMidGraded;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnMidGradeStart OnMidGradeStart;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnMidGradeSuccess OnMidGradeSuccess;
+
 	UFUNCTION(BlueprintCallable)
 	int32 GetAnswerCountByDay(int32 DayIndex) const;
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetSuccessScore() const;
 
 private:
 	UPROPERTY()
 	TArray<FDayData> DayDataSets;
+	const int32 SUCCESS_SCORE = 70;
 
 	const int MAX_CONTEXT_DISTACNE = 12;
 	static bool IsKoreanChar(TCHAR Char);
