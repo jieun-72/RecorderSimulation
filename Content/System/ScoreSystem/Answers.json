@@ -18,7 +18,7 @@
         },
         {
           "Keywords": ["양초"],
-          "ContextHints": ["떨어"],
+          "ContextHints": ["떨어", "추락"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
@@ -65,14 +65,8 @@
           "ContextScore": 5
         },
         {
-          "Keywords": ["소리"],
-          "ContextHints": ["영차", "농부", "농작인"],
-          "KeywordScore": 10,
-          "ContextScore": 5
-        },
-        {
           "Keywords": ["옷"],
-          "ContextHints": ["피가", "피묻", "피 묻"],
+          "ContextHints": ["피가", "피묻", "피 묻", "떨어", "떨어진"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
@@ -119,14 +113,8 @@
           "ContextScore": 5
         },
         {
-          "Keywords": ["비명"],
-          "ContextHints": ["괴로", "괴롭"],
-          "KeywordScore": 10,
-          "ContextScore": 5
-        },
-        {
           "Keywords": ["철창"],
-          "ContextHints": ["방에", "둘러"],
+          "ContextHints": ["방에", "방을", "둘러"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
@@ -145,12 +133,6 @@
         {
           "Keywords": ["아기"],
           "ContextHints": ["사라지", "없어지"],
-          "KeywordScore": 10,
-          "ContextScore": 5
-        },
-        {
-          "Keywords": ["목소리"],
-          "ContextHints": ["역재생", "억울"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
@@ -179,14 +161,14 @@
           "ContextScore": 5
         },
         {
-          "Keywords": ["울음"],
-          "ContextHints": ["소리", "원통"],
+          "Keywords": ["허수아비"],
+          "ContextHints": ["죽어", "죽고", "죽었", "쓰러"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keywords": ["허수아비"],
-          "ContextHints": ["죽어", "죽고", "죽었", "쓰러"],
+          "Keywords": ["비명"],
+          "ContextHints": ["남자", "괴로", "괴롭"],
           "KeywordScore": 10,
           "ContextScore": 5
         }

@@ -246,6 +246,91 @@ int32 UGradingSubsystem::GradeDay(int32 DayIndex, const TArray<FString>& UserInp
 }
 
 
+FString UGradingSubsystem::GetRandomHintKeyword(int32 DayIndex, const TArray<FString>& UserInputs)
+{
+	FString HintKeyword = TEXT("");
+
+	const FDayData* FoundDay = DayDataSets.FindByPredicate(
+		[DayIndex](const FDayData& Day)
+		{
+			return Day.DayID == DayIndex;
+		});
+
+	if (!FoundDay)
+	{
+		OnHintArrived.Broadcast(HintKeyword);
+		return HintKeyword;
+	}
+
+	// 입력 전처리
+	TArray<FString> CleanInputs;
+	for (const FString& InputRaw : UserInputs)
+	{
+		CleanInputs.Add(InputRaw.TrimStartAndEnd().ToLower());
+	}
+
+	// 아직 맞추지 못한 키워드 인덱스 모음
+	TArray<int32> UnsolvedKeywordIndices;
+
+	for (int32 k = 0; k < FoundDay->Keywords.Num(); k++)
+	{
+		const FKeywordData& KeywordData = FoundDay->Keywords[k];
+
+		bool bSolved = false;
+
+		// 모든 입력을 돌면서 검사
+		for (const FString& Input : CleanInputs)
+		{
+			if (Input.IsEmpty())
+				continue;
+
+			// 키워드 후보 중 하나라도 맞으면 solved
+			for (const FString& KeywordRaw : KeywordData.Keywords)
+			{
+				FString Keyword = KeywordRaw.TrimStartAndEnd().ToLower();
+
+				if (ContainsWholeWordKorean(Input, Keyword))
+				{
+					bSolved = true;
+					break;
+				}
+			}
+
+			if (bSolved)
+				break;
+		}
+
+		if (!bSolved)
+		{
+			UnsolvedKeywordIndices.Add(k);
+		}
+	}
+
+	// 전부 맞췄으면 빈 문자열 반환
+	if (UnsolvedKeywordIndices.Num() == 0)
+	{
+		OnHintArrived.Broadcast(HintKeyword);
+		return HintKeyword;
+	}
+
+	// 랜덤 선택
+	int32 RandomIndex = FMath::RandHelper(UnsolvedKeywordIndices.Num());
+	int32 SelectedKeywordIndex = UnsolvedKeywordIndices[RandomIndex];
+
+	const FKeywordData& SelectedKeyword = FoundDay->Keywords[SelectedKeywordIndex];
+
+	// 첫 번째 후보 반환
+	if (SelectedKeyword.Keywords.Num() > 0)
+	{
+		HintKeyword = SelectedKeyword.Keywords[0];
+	}
+
+	OnHintArrived.Broadcast(HintKeyword);
+
+	return HintKeyword;
+}
+
+
 void UGradingSubsystem::DayStartReady()
 {
 	OnDayStartReady.Broadcast();
@@ -260,6 +345,12 @@ void UGradingSubsystem::MidGradeSuccess()
 {
 	OnMidGradeSuccess.Broadcast();
 }
+
+void UGradingSubsystem::HintStart()
+{
+	OnHintStart.Broadcast();
+}
+
 
 int32 UGradingSubsystem::GetAnswerCountByDay(int32 DayIndex) const
 {
@@ -279,6 +370,9 @@ int32 UGradingSubsystem::GetSuccessScore() const
 {
 	return SUCCESS_SCORE;
 }
+
+
+
 
 bool UGradingSubsystem::IsKoreanChar(TCHAR Char)
 {
