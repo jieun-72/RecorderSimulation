@@ -5,25 +5,25 @@
       "DayID": 1,
       "Keywords": [
         {
-          "Keyword": "동상",
+          "Keywords": ["동상"],
           "ContextHints": ["움직", "걸어"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "등불",
+          "Keywords": ["등불"],
           "ContextHints": ["움직", "흔들"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "양초",
-          "ContextHints": ["떨어"],
+          "Keywords": ["양초"],
+          "ContextHints": ["떨어", "추락"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "책",
+          "Keywords": ["책"],
           "ContextHints": ["날고", "날아다", "날아", "떠있", "떠다"],
           "KeywordScore": 10,
           "ContextScore": 5
@@ -35,44 +35,38 @@
       "DayID": 2,
       "Keywords": [
         {
-          "Keyword": "농기구",
+          "Keywords": ["농기구"],
           "ContextHints": ["널브러", "흩어"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "고추",
+          "Keywords": ["고추"],
           "ContextHints": ["말리", "널려"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "문서",
+          "Keywords": ["문서"],
           "ContextHints": ["흩뿌", "흩뿌려", "흩뿌린"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "소",
+          "Keywords": ["소"],
           "ContextHints": ["뒤집히", "뒤집힌", "뒤집었", "거꾸로", "돌아가"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "농작물",
-          "ContextHints": ["자라","자란", "자랐", "바닥"],
+          "Keywords": ["농작물"],
+          "ContextHints": ["자라", "자란", "자랐", "바닥"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "소리",
-          "ContextHints": ["영차", "농부", "농작인"],
-          "KeywordScore": 10,
-          "ContextScore": 5
-        },
-        {
-          "Keyword": "옷",
-          "ContextHints": ["피가", "피묻", "피 묻"],
+          "Keywords": ["옷"],
+          "ContextHints": ["피가", "피묻", "피 묻", "떨어", "떨어진"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
@@ -83,50 +77,44 @@
       "DayID": 3,
       "Keywords": [
         {
-          "Keyword": "아기",
-          "ContextHints": ["울고", "울음", "우는"],
+          "Keywords": ["울음"],
+          "ContextHints": ["아기", "애기"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "발자국",
-          "ContextHints": ["아기", "작은"],
+          "Keywords": ["발자국"],
+          "ContextHints": ["아기", "애기", "작은"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "허수아비",
-          "ContextHints": ["흩어", "쓰러"],
+          "Keywords": ["허수아비"],
+          "ContextHints": ["흩어", "쓰러", "흩뿌"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "도구",
+          "Keywords": ["도구"],
           "ContextHints": ["고문"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "문서",
+          "Keywords": ["문서"],
           "ContextHints": ["집행"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "집행인",
+          "Keywords": ["집행인"],
           "ContextHints": ["해태", "휘두", "무기"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "비명",
-          "ContextHints": ["괴로", "괴롭"],
-          "KeywordScore": 10,
-          "ContextScore": 5
-        },
-        {
-          "Keyword": "철창",
-          "ContextHints": ["방에", "둘러"],
+          "Keywords": ["철창"],
+          "ContextHints": ["방에", "방을", "둘러"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
@@ -137,61 +125,55 @@
       "DayID": 4,
       "Keywords": [
         {
-          "Keyword": "요괴",
+          "Keywords": ["요괴"],
           "ContextHints": ["따라", "따라오", "뛰어오"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "아기",
+          "Keywords": ["아기"],
           "ContextHints": ["사라지", "없어지"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "목소리",
-          "ContextHints": ["역재생", "억울"],
-          "KeywordScore": 10,
-          "ContextScore": 5
-        },
-        {
-          "Keyword": "간판",
+          "Keywords": ["간판"],
           "ContextHints": ["떨어지", "떨어"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "서랍장",
+          "Keywords": ["서랍장"],
           "ContextHints": ["닫히", "닫혀", "열리", "열려"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "방",
+          "Keywords": ["방"],
           "ContextHints": ["피가", "피로", "피투성", "피범벅"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "부적",
+          "Keywords": ["부적"],
           "ContextHints": ["문에", "붙어", "붙인"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "울음",
-          "ContextHints": ["소리", "원통"],
+          "Keywords": ["허수아비"],
+          "ContextHints": ["죽어", "죽고", "죽었", "쓰러"],
           "KeywordScore": 10,
           "ContextScore": 5
         },
         {
-          "Keyword": "허수아비",
-          "ContextHints": ["죽어", "죽고", "죽었", "쓰러"],
+          "Keywords": ["비명"],
+          "ContextHints": ["남자", "괴로", "괴롭"],
           "KeywordScore": 10,
           "ContextScore": 5
         }
       ]
     }
-
+    
   ]
 }
