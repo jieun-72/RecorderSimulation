@@ -15,9 +15,15 @@ public class RecorderSimulation : ModuleRules
             "Engine",
             "InputCore",
             "Json",
-            "JsonUtilities"
+            "JsonUtilities",
+            "MoviePlayer"
         });
 
+        PrivateDependencyModuleNames.AddRange(new string[]
+        {
+            "Slate",
+            "SlateCore"
+        });
 
         PrivateDependencyModuleNames.AddRange(new string[] { });
 
