@@ -29,8 +29,8 @@ void SLoadingScreen::Construct(const FArguments& InArgs)
 						[
 							SNew(STextBlock)
 								.Text(this, &SLoadingScreen::GetLoadingText)
-								.ColorAndOpacity(FSlateColor(FLinearColor::White)) // 안 보이는 문제 방지
-								.Font(FCoreStyle::GetDefaultFontStyle("Bold", 40)) // 크기 키움 (확실히 보이게)
+								.ColorAndOpacity(FSlateColor(FLinearColor::White))
+								.Font(FCoreStyle::GetDefaultFontStyle("Bold", 70))
 						]
 				]
 		];
@@ -39,10 +39,18 @@ void SLoadingScreen::Construct(const FArguments& InArgs)
 FText SLoadingScreen::GetLoadingText() const
 {
 	FString Dots = FString::ChrN(DotCount, '.');
-	return FText::FromString("Loading" + Dots);
+	return FText::FromString(Dots);
 }
 
 void SLoadingScreen::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
 {
-	DotCount = (DotCount + 1) % 4;
+	TimeAccumulator += InDeltaTime;
+
+	if (TimeAccumulator >= 0.3f)
+	{
+		DotCount = (DotCount + 1) % 7;
+		TimeAccumulator = 0.0f;
+
+		Invalidate(EInvalidateWidgetReason::Paint);
+	}
 }

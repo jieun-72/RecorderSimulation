@@ -17,4 +17,5 @@ private:
 	FText GetLoadingText() const;
 
 	mutable int32 DotCount = 0;
+	float TimeAccumulator = 0.0f;
 };
