@@ -10,6 +10,14 @@ void UGradingSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
+	LoadAnswerData();
+	LoadCandidateData();
+}
+
+void UGradingSubsystem::LoadAnswerData()
+{
+	// 후보 없는 버전
+
 	DayDataSets.Empty();
 
 	FString FilePath = FPaths::ProjectContentDir() + TEXT("System/ScoreSystem/Answers.json");
@@ -83,6 +91,97 @@ void UGradingSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		}
 
 		DayDataSets.Add(NewDay);
+	}
+
+}
+
+void UGradingSubsystem::LoadCandidateData()
+{
+	// 후보 있는 버전
+
+	CandidateDays.Empty();
+	CandidateFakePool.Contexts.Empty();
+	CandidateFakePool.Keywords.Empty();
+
+	FString FilePath = FPaths::ProjectContentDir() + TEXT("System/ScoreSystem/CandidateAnswers.json");
+
+	FString JsonString;
+	if (!FFileHelper::LoadFileToString(JsonString, *FilePath))
+		return;
+
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
+	TSharedPtr<FJsonObject> JsonObject;
+
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject) || !JsonObject.IsValid())
+		return;
+
+	// CandidateDays 파싱
+	const TArray<TSharedPtr<FJsonValue>>* DaysArray;
+	if (JsonObject->TryGetArrayField(TEXT("CandidateDays"), DaysArray))
+	{
+		for (const TSharedPtr<FJsonValue>& DayValue : *DaysArray)
+		{
+			TSharedPtr<FJsonObject> DayObject = DayValue->AsObject();
+
+			FCandidateDay NewDay;
+			NewDay.DayID = DayObject->GetIntegerField(TEXT("DayID"));
+
+			const TArray<TSharedPtr<FJsonValue>>* AnswersArray;
+
+			if (DayObject->TryGetArrayField(TEXT("Answers"), AnswersArray))
+			{
+				for (const TSharedPtr<FJsonValue>& AnswerValue : *AnswersArray)
+				{
+					TSharedPtr<FJsonObject> AnswerObject = AnswerValue->AsObject();
+
+					FCandidateAnswer NewAnswer;
+
+					NewAnswer.Context =
+						AnswerObject->GetStringField(TEXT("Context")).TrimStartAndEnd();
+
+					NewAnswer.Keyword =
+						AnswerObject->GetStringField(TEXT("Keyword")).TrimStartAndEnd();
+
+					NewDay.Answers.Add(NewAnswer);
+				}
+			}
+
+			CandidateDays.Add(NewDay);
+		}
+	}
+
+	// FakePool 파싱
+	const TSharedPtr<FJsonObject>* FakePoolObject;
+
+	if (JsonObject->TryGetObjectField(TEXT("FakePool"), FakePoolObject))
+	{
+		const TArray<TSharedPtr<FJsonValue>>* ContextArray;
+
+		if ((*FakePoolObject)->TryGetArrayField(TEXT("Contexts"), ContextArray))
+		{
+			for (const TSharedPtr<FJsonValue>& Value : *ContextArray)
+			{
+				FString Str = Value->AsString().TrimStartAndEnd();
+				if (!Str.IsEmpty())
+				{
+					CandidateFakePool.Contexts.Add(Str);
+				}
+			}
+		}
+
+		const TArray<TSharedPtr<FJsonValue>>* KeywordArray;
+
+		if ((*FakePoolObject)->TryGetArrayField(TEXT("Keywords"), KeywordArray))
+		{
+			for (const TSharedPtr<FJsonValue>& Value : *KeywordArray)
+			{
+				FString Str = Value->AsString().TrimStartAndEnd();
+				if (!Str.IsEmpty())
+				{
+					CandidateFakePool.Keywords.Add(Str);
+				}
+			}
+		}
 	}
 }
 
@@ -510,4 +609,111 @@ int32 UGradingSubsystem::CountOccurrences(const FString& Text, const FString& Ke
 	}
 
 	return Count;
+}
+
+int32 UGradingSubsystem::CandidateGradeDay(
+	int32 DayIndex,
+	const TArray<FString>& UserInputs,
+	bool isDayEnd)
+{
+	const FCandidateDay* FoundDay = CandidateDays.FindByPredicate(
+		[DayIndex](const FCandidateDay& Day)
+		{
+			return Day.DayID == DayIndex;
+		});
+
+	if (!FoundDay)
+		return 0;
+
+	const int32 MaxScore = FoundDay->Answers.Num() * (KEYWORD_SCORE + CONTEXT_SCORE);
+	int32 RawScore = 0;
+
+	TSet<int32> ScoredAnswers;
+
+	// 입력 전처리
+	TArray<FString> CleanInputs;
+	for (const FString& Input : UserInputs)
+	{
+		CleanInputs.Add(Input.TrimStartAndEnd());
+	}
+
+	// 각 입력 문장 검사
+	for (const FString& Input : CleanInputs)
+	{
+		if (Input.IsEmpty())
+			continue;
+
+		for (int32 a = 0; a < FoundDay->Answers.Num(); a++)
+		{
+			if (ScoredAnswers.Contains(a))
+				continue;
+
+			const FCandidateAnswer& Answer = FoundDay->Answers[a];
+
+			const FString Context = Answer.Context;
+			const FString Keyword = Answer.Keyword;
+
+			// 키워드 위치 찾기
+			int32 KeywordIndex = Input.Find(Keyword);
+
+			// 키워드 포함 여부 확인
+			if (KeywordIndex == INDEX_NONE)
+				continue;
+
+			ScoredAnswers.Add(a);
+			RawScore += KEYWORD_SCORE;
+
+			// 설명글 위치 찾기
+			int32 ContextIndex = Input.Find(Context);
+
+			// 설명글 포함 여부 확인
+			if (ContextIndex != INDEX_NONE)
+			{
+				int32 ExpectedKeywordIndex = ContextIndex + Context.Len() + 1;
+
+				// 정확히 한 칸 띄어쓰기 후 Keyword가 나오는지 확인 (맞춤법 검사)
+				if (KeywordIndex == ExpectedKeywordIndex)
+				{
+					RawScore += CONTEXT_SCORE;
+				}
+			}
+
+			// 한 문장당 한 키워드만 인정
+			break;
+		}
+	}
+
+	int32 FinalScore = 0;
+
+	if (MaxScore > 0)
+	{
+		FinalScore = FMath::RoundToInt(
+			(float)RawScore / (float)MaxScore * 100.f
+		);
+	}
+
+	if (isDayEnd)
+	{
+		OnDayGraded.Broadcast(FinalScore);
+	}
+	else
+	{
+		OnMidGraded.Broadcast(FinalScore);
+	}
+
+	return FinalScore;
+}
+
+int32 UGradingSubsystem::GetCandidateCountByDay(int32 DayIndex) const
+{
+	const FCandidateDay* FoundDay = CandidateDays.FindByPredicate(
+		[DayIndex](const FCandidateDay& Day)
+		{
+			return Day.DayID == DayIndex;
+		});
+
+	if (!FoundDay)
+		return 0;
+
+	return FoundDay->Answers.Num();
 }
