@@ -130,6 +130,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetSuccessScore() const;
 
+	UFUNCTION(BlueprintCallable)
+	TArray<FString> GetCandidateKeywords(
+		int32 DayIndex,
+		int32 TotalCount);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FString> GetCandidateContexts(
+		int32 DayIndex,
+		int32 TotalCount);
+
 
 private:
 	const int32 SUCCESS_SCORE = 80;

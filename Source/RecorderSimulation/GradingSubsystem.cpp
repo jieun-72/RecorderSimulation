@@ -717,3 +717,90 @@ int32 UGradingSubsystem::GetCandidateCountByDay(int32 DayIndex) const
 
 	return FoundDay->Answers.Num();
 }
+
+TArray<FString> UGradingSubsystem::GetCandidateKeywords(
+	int32 DayIndex,
+	int32 TotalCount)
+{
+	TArray<FString> Result;
+
+	const FCandidateDay* FoundDay = CandidateDays.FindByPredicate(
+		[DayIndex](const FCandidateDay& Day)
+		{
+			return Day.DayID == DayIndex;
+		});
+
+	if (!FoundDay)
+		return Result;
+
+	TSet<FString> UniqueSet;
+
+	// 1. 정답 Keyword 추가
+	for (const FCandidateAnswer& Ans : FoundDay->Answers)
+	{
+		if (!Ans.Keyword.IsEmpty())
+		{
+			UniqueSet.Add(Ans.Keyword);
+		}
+	}
+
+	// 2. FakePool로 채우기
+	while (UniqueSet.Num() < TotalCount && CandidateFakePool.Keywords.Num() > 0)
+	{
+		int32 RandIdx = FMath::RandHelper(CandidateFakePool.Keywords.Num());
+		UniqueSet.Add(CandidateFakePool.Keywords[RandIdx]);
+	}
+
+	// 3. 배열 변환
+	Result = UniqueSet.Array();
+
+	// 4. 셔플
+	for (int32 i = 0; i < Result.Num(); i++)
+	{
+		int32 SwapIdx = FMath::RandHelper(Result.Num());
+		Result.Swap(i, SwapIdx);
+	}
+
+	return Result;
+}
+
+TArray<FString> UGradingSubsystem::GetCandidateContexts(
+	int32 DayIndex,
+	int32 TotalCount)
+{
+	TArray<FString> Result;
+
+	const FCandidateDay* FoundDay = CandidateDays.FindByPredicate(
+		[DayIndex](const FCandidateDay& Day)
+		{
+			return Day.DayID == DayIndex;
+		});
+
+	if (!FoundDay)
+		return Result;
+
+	// 정답 Context 그대로 추가 (중복 포함)
+	for (const FCandidateAnswer& Ans : FoundDay->Answers)
+	{
+		if (!Ans.Context.IsEmpty())
+		{
+			Result.Add(Ans.Context);
+		}
+	}
+
+	// Fake 추가
+	while (Result.Num() < TotalCount && CandidateFakePool.Contexts.Num() > 0)
+	{
+		int32 RandIdx = FMath::RandHelper(CandidateFakePool.Contexts.Num());
+		Result.Add(CandidateFakePool.Contexts[RandIdx]);
+	}
+
+	// 셔플
+	for (int32 i = 0; i < Result.Num(); i++)
+	{
+		int32 SwapIdx = FMath::RandHelper(Result.Num());
+		Result.Swap(i, SwapIdx);
+	}
+
+	return Result;
+}
