@@ -45,6 +45,12 @@ struct FCandidateDay
 	int32 DayID;
 
 	UPROPERTY()
+	int32 ContextCount;
+
+	UPROPERTY()
+	int32 KeywordCount;
+
+	UPROPERTY()
 	TArray<FCandidateAnswer> Answers;
 };
 
@@ -131,14 +137,10 @@ public:
 	int32 GetSuccessScore() const;
 
 	UFUNCTION(BlueprintCallable)
-	TArray<FString> GetCandidateKeywords(
-		int32 DayIndex,
-		int32 TotalCount);
+	TArray<FString> GetCandidateKeywords(int32 DayIndex);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<FString> GetCandidateContexts(
-		int32 DayIndex,
-		int32 TotalCount);
+	TArray<FString> GetCandidateContexts(int32 DayIndex);
 
 
 private:
@@ -164,4 +166,7 @@ private:
 	static bool IsWordBoundary(TCHAR Char);
 	static bool ContainsWholeWordKorean(const FString& Word, const FString& Keyword);
 	static int32 CountOccurrences(const FString& Text, const FString& Keyword);
+
+	int32 GetTotalKeywordCandidateCount(int32 DayIndex) const;
+	int32 GetTotalContextCandidateCount(int32 DayIndex) const;
 };
