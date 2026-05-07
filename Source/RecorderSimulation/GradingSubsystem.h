@@ -36,7 +36,7 @@ struct FCandidateAnswer
 	FString Keyword;
 };
 
-USTRUCT(BlueprintType)
+USTRUCT()
 struct FCandidateDay
 {
 	GENERATED_BODY()
@@ -49,6 +49,12 @@ struct FCandidateDay
 
 	UPROPERTY()
 	int32 KeywordCount;
+
+	UPROPERTY()
+	int32 CrossDayContextCount;
+
+	UPROPERTY()
+	int32 CrossDayKeywordCount;
 
 	UPROPERTY()
 	TArray<FCandidateAnswer> Answers;
@@ -169,4 +175,6 @@ private:
 
 	int32 GetTotalKeywordCandidateCount(int32 DayIndex) const;
 	int32 GetTotalContextCandidateCount(int32 DayIndex) const;
+	int32 GetCrossDayContextCount(int32 DayIndex) const;
+	int32 GetCrossDayKeywordCount(int32 DayIndex) const;
 };

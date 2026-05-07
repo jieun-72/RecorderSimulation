@@ -129,6 +129,16 @@ void UGradingSubsystem::LoadCandidateData()
 			NewDay.ContextCount = DayObject->GetIntegerField(TEXT("ContextCount"));
 			NewDay.KeywordCount = DayObject->GetIntegerField(TEXT("KeywordCount"));
 
+			NewDay.CrossDayContextCount =
+				DayObject->HasField(TEXT("CrossDayContextCount"))
+				? DayObject->GetIntegerField(TEXT("CrossDayContextCount"))
+				: 0;
+
+			NewDay.CrossDayKeywordCount =
+				DayObject->HasField(TEXT("CrossDayKeywordCount"))
+				? DayObject->GetIntegerField(TEXT("CrossDayKeywordCount"))
+				: 0;
+
 			const TArray<TSharedPtr<FJsonValue>>* AnswersArray;
 
 			if (DayObject->TryGetArrayField(TEXT("Answers"), AnswersArray))
@@ -736,7 +746,7 @@ TArray<FString> UGradingSubsystem::GetCandidateKeywords(int32 DayIndex)
 
 	TSet<FString> UniqueSet;
 
-	// 1. 정답 Keyword 추가
+	// 1. 현재 Day 정답 Keyword 추가
 	for (const FCandidateAnswer& Ans : FoundDay->Answers)
 	{
 		if (!Ans.Keyword.IsEmpty())
@@ -745,24 +755,67 @@ TArray<FString> UGradingSubsystem::GetCandidateKeywords(int32 DayIndex)
 		}
 	}
 
-	// 2. FakePool로 채우기
+	// 2. 다른 날짜 정답 Keyword 섞기
+	TArray<FString> CrossDayPool;
+
+	for (const FCandidateDay& Day : CandidateDays)
+	{
+		// 현재 날짜 제외
+		if (Day.DayID == DayIndex)
+			continue;
+
+		// 미래 날짜 제외 (선택 사항)
+		if (Day.DayID > DayIndex)
+			continue;
+
+		for (const FCandidateAnswer& Ans : Day.Answers)
+		{
+			if (!Ans.Keyword.IsEmpty())
+			{
+				CrossDayPool.AddUnique(Ans.Keyword);
+			}
+		}
+	}
+
+	// 셔플
+	for (int32 i = CrossDayPool.Num() - 1; i > 0; i--)
+	{
+		int32 SwapIdx = FMath::RandHelper(i + 1);
+		CrossDayPool.Swap(i, SwapIdx);
+	}
+
+	// 일부만 추가
+	const int32 CrossDayCount =
+		GetCrossDayKeywordCount(DayIndex);
+
+	for (int32 i = 0;
+		i < CrossDayCount && i < CrossDayPool.Num();
+		i++)
+	{
+		UniqueSet.Add(CrossDayPool[i]);
+	}
+
+	// 3. FakePool로 채우기
 	int32 TotalCount = GetTotalKeywordCandidateCount(DayIndex);
 	TotalCount = FMath::Max(TotalCount, FoundDay->Answers.Num());
 
 	int32 Safety = 0;
+
 	while (UniqueSet.Num() < TotalCount
 		&& CandidateFakePool.Keywords.Num() > 0
 		&& Safety < 100)
 	{
 		int32 RandIdx = FMath::RandHelper(CandidateFakePool.Keywords.Num());
+
 		UniqueSet.Add(CandidateFakePool.Keywords[RandIdx]);
+
 		Safety++;
 	}
 
-	// 3. 배열 변환
+	// 4. 배열 변환
 	Result = UniqueSet.Array();
 
-	// 4. 셔플
+	// 5. 최종 셔플
 	for (int32 i = Result.Num() - 1; i > 0; i--)
 	{
 		int32 SwapIdx = FMath::RandHelper(i + 1);
@@ -785,7 +838,7 @@ TArray<FString> UGradingSubsystem::GetCandidateContexts(int32 DayIndex)
 	if (!FoundDay)
 		return Result;
 
-	// 정답 Context 그대로 추가 (중복 포함)
+	// 1. 현재 Day 정답 Context 추가 (중복 허용)
 	for (const FCandidateAnswer& Ans : FoundDay->Answers)
 	{
 		if (!Ans.Context.IsEmpty())
@@ -794,17 +847,65 @@ TArray<FString> UGradingSubsystem::GetCandidateContexts(int32 DayIndex)
 		}
 	}
 
-	// Fake 추가
-	int32 TotalCount = GetTotalContextCandidateCount(DayIndex);
-	TotalCount = FMath::Max(TotalCount, FoundDay->Answers.Num());
+	// 2. 다른 날짜 Context 섞기
+	TArray<FString> CrossDayPool;
 
-	while (Result.Num() < TotalCount && CandidateFakePool.Contexts.Num() > 0)
+	for (const FCandidateDay& Day : CandidateDays)
 	{
-		int32 RandIdx = FMath::RandHelper(CandidateFakePool.Contexts.Num());
-		Result.Add(CandidateFakePool.Contexts[RandIdx]);
+		// 현재 날짜 제외
+		if (Day.DayID == DayIndex)
+			continue;
+
+		// 미래 날짜 제외 (선택 사항)
+		if (Day.DayID > DayIndex)
+			continue;
+
+		for (const FCandidateAnswer& Ans : Day.Answers)
+		{
+			if (!Ans.Context.IsEmpty())
+			{
+				// Context는 중복 허용
+				CrossDayPool.Add(Ans.Context);
+			}
+		}
 	}
 
 	// 셔플
+	for (int32 i = CrossDayPool.Num() - 1; i > 0; i--)
+	{
+		int32 SwapIdx = FMath::RandHelper(i + 1);
+		CrossDayPool.Swap(i, SwapIdx);
+	}
+
+	// 일부만 추가
+	const int32 CrossDayCount =
+		GetCrossDayContextCount(DayIndex);
+
+	for (int32 i = 0;
+		i < CrossDayCount && i < CrossDayPool.Num();
+		i++)
+	{
+		Result.Add(CrossDayPool[i]);
+	}
+
+	// 3. FakePool 추가
+	int32 TotalCount = GetTotalContextCandidateCount(DayIndex);
+	TotalCount = FMath::Max(TotalCount, FoundDay->Answers.Num());
+
+	int32 Safety = 0;
+
+	while (Result.Num() < TotalCount
+		&& CandidateFakePool.Contexts.Num() > 0
+		&& Safety < 100)
+	{
+		int32 RandIdx = FMath::RandHelper(CandidateFakePool.Contexts.Num());
+
+		Result.Add(CandidateFakePool.Contexts[RandIdx]);
+
+		Safety++;
+	}
+
+	// 4. 최종 셔플
 	for (int32 i = Result.Num() - 1; i > 0; i--)
 	{
 		int32 SwapIdx = FMath::RandHelper(i + 1);
@@ -813,8 +914,6 @@ TArray<FString> UGradingSubsystem::GetCandidateContexts(int32 DayIndex)
 
 	return Result;
 }
-
-
 
 int32 UGradingSubsystem::GetTotalKeywordCandidateCount(int32 DayIndex) const
 {
@@ -836,4 +935,26 @@ int32 UGradingSubsystem::GetTotalContextCandidateCount(int32 DayIndex) const
 		});
 
 	return FoundDay ? FoundDay->ContextCount : 0;
+}
+
+int32 UGradingSubsystem::GetCrossDayContextCount(int32 DayIndex) const
+{
+	const FCandidateDay* FoundDay = CandidateDays.FindByPredicate(
+		[DayIndex](const FCandidateDay& Day)
+		{
+			return Day.DayID == DayIndex;
+		});
+
+	return FoundDay ? FoundDay->CrossDayContextCount : 0;
+}
+
+int32 UGradingSubsystem::GetCrossDayKeywordCount(int32 DayIndex) const
+{
+	const FCandidateDay* FoundDay = CandidateDays.FindByPredicate(
+		[DayIndex](const FCandidateDay& Day)
+		{
+			return Day.DayID == DayIndex;
+		});
+
+	return FoundDay ? FoundDay->CrossDayKeywordCount : 0;
 }

@@ -4,6 +4,8 @@
       "DayID": 1,
       "ContextCount": 9,
       "KeywordCount": 9,
+      "CrossDayContextCount": 1,
+      "CrossDayKeywordCount": 1,
       "Answers": [
         {
           "Context": "움직이는",
@@ -27,6 +29,8 @@
       "DayID": 2,
       "ContextCount": 12,
       "KeywordCount": 12,
+      "CrossDayContextCount": 2,
+      "CrossDayKeywordCount": 2,
       "Answers": [
         {
           "Context": "널브러진",
@@ -58,6 +62,8 @@
       "DayID": 3,
       "ContextCount": 15,
       "KeywordCount": 15,
+      "CrossDayContextCount": 2,
+      "CrossDayKeywordCount": 2,
       "Answers": [
         {
           "Context": "아기",
@@ -93,6 +99,8 @@
       "DayID": 4,
       "ContextCount": 15,
       "KeywordCount": 15,
+      "CrossDayContextCount": 2,
+      "CrossDayKeywordCount": 2,
       "Answers": [
         {
           "Context": "따라오는",
