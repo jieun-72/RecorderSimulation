@@ -1,0 +1,203 @@
+{
+  "CandidateDays": [
+    {
+      "DayID": 1,
+      "ContextCount": 9,
+      "KeywordCount": 9,
+      "CrossDayContextCount": 1,
+      "CrossDayKeywordCount": 1,
+      "Answers": [
+        {
+          "Context": "움직이는",
+          "Keyword": "동상"
+        },
+        {
+          "Context": "움직이는",
+          "Keyword": "등불"
+        },
+        {
+          "Context": "떨어지는",
+          "Keyword": "양초"
+        },
+        {
+          "Context": "날아다니는",
+          "Keyword": "책"
+        }
+      ]
+    },
+    {
+      "DayID": 2,
+      "ContextCount": 12,
+      "KeywordCount": 12,
+      "CrossDayContextCount": 2,
+      "CrossDayKeywordCount": 2,
+      "Answers": [
+        {
+          "Context": "널브러진",
+          "Keyword": "농기구"
+        },
+        {
+          "Context": "말리고 있는",
+          "Keyword": "고추"
+        },
+        {
+          "Context": "흩뿌려진",
+          "Keyword": "문서"
+        },
+        {
+          "Context": "뒤집히는",
+          "Keyword": "소"
+        },
+        {
+          "Context": "방 바닥에 자란",
+          "Keyword": "농작물"
+        },
+        {
+          "Context": "피묻은",
+          "Keyword": "옷"
+        }
+      ]
+    },
+    {
+      "DayID": 3,
+      "ContextCount": 15,
+      "KeywordCount": 15,
+      "CrossDayContextCount": 2,
+      "CrossDayKeywordCount": 2,
+      "Answers": [
+        {
+          "Context": "아기",
+          "Keyword": "울음소리"
+        },
+        {
+          "Context": "작은",
+          "Keyword": "발자국"
+        },
+        {
+          "Context": "흩뿌려진",
+          "Keyword": "허수아비"
+        },
+        {
+          "Context": "고문",
+          "Keyword": "도구"
+        },
+        {
+          "Context": "형 집행",
+          "Keyword": "문서"
+        },
+        {
+          "Context": "해태 옆",
+          "Keyword": "집행인"
+        },
+        {
+          "Context": "철창으로 둘러쌓인",
+          "Keyword": "방"
+        }
+      ]
+    },
+    {
+      "DayID": 4,
+      "ContextCount": 15,
+      "KeywordCount": 15,
+      "CrossDayContextCount": 2,
+      "CrossDayKeywordCount": 2,
+      "Answers": [
+        {
+          "Context": "따라오는",
+          "Keyword": "요괴"
+        },
+        {
+          "Context": "사라지는",
+          "Keyword": "아기"
+        },
+        {
+          "Context": "떨어지는",
+          "Keyword": "간판"
+        },
+        {
+          "Context": "피투성이",
+          "Keyword": "방"
+        },
+        {
+          "Context": "문에 붙은",
+          "Keyword": "부적"
+        },
+        {
+          "Context": "죽은",
+          "Keyword": "허수아비"
+        },
+        {
+          "Context": "열리고 닫히는",
+          "Keyword": "책상"
+        }
+      ]
+    }
+  ],
+  
+
+  "FakePool": {
+    "Contexts": [
+      "부서진",
+      "타버린",
+      "기울어진",
+      "뒤틀린",
+      "젖어있는",
+      "얼룩진",
+      "빛나는",
+      "깨진",
+      "문 앞에 놓인",
+      "금이 간",
+      "천장에 매달린",
+      "조용히 떨리는",
+      "바람에 흔들리는",
+      "벽에 기대어진",
+      "어둠에 잠긴",
+      "피가 번진",
+      "차갑게 식은",
+      "눅눅한",
+      "희미하게 보이는",
+      "무너져 내린",
+      "바닥에 눌린",
+      "쌓여 있는",
+      "부유하는",
+      "속삭이는",
+      "얼어붙은",
+      "비어 있는",
+      "끊어진",
+      "검게 변한"
+    ],
+
+    "Keywords": [
+      "문",
+      "의자",
+      "그릇",
+      "항아리",
+      "천",
+      "장식",
+      "기둥",
+      "상자",
+      "거울",
+      "그림자",
+      "발자국",
+      "흙",
+      "천장",
+      "벽",
+      "문틀",
+      "손자국",
+      "핏자국",
+      "조각",
+      "잔해",
+      "덩어리",
+      "자국",
+      "천조각",
+      "나무판자",
+      "돌덩이",
+      "재",
+      "연기",
+      "빛",
+      "흔적",
+      "형체",
+      "그을음"
+    ]
+  }
+}
