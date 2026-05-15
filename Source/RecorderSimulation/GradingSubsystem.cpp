@@ -663,36 +663,31 @@ int32 UGradingSubsystem::CandidateGradeDay(
 
 			const FCandidateAnswer& Answer = FoundDay->Answers[a];
 
-			const FString Context = Answer.Context;
-			const FString Keyword = Answer.Keyword;
+			const FString Context = Answer.Context.TrimStartAndEnd();
+			const FString Keyword = Answer.Keyword.TrimStartAndEnd();
 
-			// 키워드 위치 찾기
-			int32 KeywordIndex = Input.Find(Keyword);
+			const FString FullAnswer = Context + TEXT(" ") + Keyword;
 
-			// 키워드 포함 여부 확인
-			if (KeywordIndex == INDEX_NONE)
-				continue;
-
-			ScoredAnswers.Add(a);
-			RawScore += KEYWORD_SCORE;
-
-			// 설명글 위치 찾기
-			int32 ContextIndex = Input.Find(Context);
-
-			// 설명글 포함 여부 확인
-			if (ContextIndex != INDEX_NONE)
+			// 1. Context + Keyword 완전 일치
+			if (Input.Equals(FullAnswer))
 			{
-				int32 ExpectedKeywordIndex = ContextIndex + Context.Len() + 1;
+				ScoredAnswers.Add(a);
 
-				// 정확히 한 칸 띄어쓰기 후 Keyword가 나오는지 확인 (맞춤법 검사)
-				if (KeywordIndex == ExpectedKeywordIndex)
-				{
-					RawScore += CONTEXT_SCORE;
-				}
+				RawScore += KEYWORD_SCORE;
+				RawScore += CONTEXT_SCORE;
+
+				break;
 			}
 
-			// 한 문장당 한 키워드만 인정
-			break;
+			// 2. Keyword만 완전 일치
+			if (Input.Equals(Keyword))
+			{
+				ScoredAnswers.Add(a);
+
+				RawScore += KEYWORD_SCORE;
+
+				break;
+			}
 		}
 	}
 
