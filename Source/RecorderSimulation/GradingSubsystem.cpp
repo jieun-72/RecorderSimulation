@@ -20,7 +20,7 @@ void UGradingSubsystem::LoadAnswerData()
 
 	DayDataSets.Empty();
 
-	FString FilePath = FPaths::ProjectContentDir() + TEXT("System/ScoreSystem/Answers.json");
+	FString FilePath = FPaths::ProjectContentDir() + TEXT("System/ScoreSystem/Json/Answers.json");
 
 	FString JsonString;
 	if (!FFileHelper::LoadFileToString(JsonString, *FilePath))
@@ -103,7 +103,7 @@ void UGradingSubsystem::LoadCandidateData()
 	CandidateFakePool.Contexts.Empty();
 	CandidateFakePool.Keywords.Empty();
 
-	FString FilePath = FPaths::ProjectContentDir() + TEXT("System/ScoreSystem/CandidateAnswers.json");
+	FString FilePath = FPaths::ProjectContentDir() + TEXT("System/ScoreSystem/Json/CandidateAnswers.json");
 
 	FString JsonString;
 	if (!FFileHelper::LoadFileToString(JsonString, *FilePath))
