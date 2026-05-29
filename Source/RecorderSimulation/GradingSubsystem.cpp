@@ -953,3 +953,82 @@ int32 UGradingSubsystem::GetCrossDayKeywordCount(int32 DayIndex) const
 
 	return FoundDay ? FoundDay->CrossDayKeywordCount : 0;
 }
+
+FString UGradingSubsystem::GetRandomCandidateHintKeyword(int32 DayIndex, const TArray<FString>& UserInputs)
+{
+	FString HintKeyword = TEXT("");
+
+	const FCandidateDay* FoundDay = CandidateDays.FindByPredicate(
+		[DayIndex](const FCandidateDay& Day)
+		{
+			return Day.DayID == DayIndex;
+		});
+
+	if (!FoundDay)
+	{
+		OnHintArrived.Broadcast(HintKeyword);
+		return HintKeyword;
+	}
+
+	// 입력 전처리
+	TArray<FString> CleanInputs;
+
+	for (const FString& InputRaw : UserInputs)
+	{
+		CleanInputs.Add(InputRaw.TrimStartAndEnd().ToLower());
+	}
+
+	// 아직 맞추지 못한 후보 정답들
+	TArray<int32> UnsolvedAnswerIndices;
+
+	for (int32 i = 0; i < FoundDay->Answers.Num(); i++)
+	{
+		const FCandidateAnswer& AnswerData = FoundDay->Answers[i];
+
+		FString Keyword =
+			AnswerData.Keyword.TrimStartAndEnd().ToLower();
+
+		bool bSolved = false;
+
+		// 유저 입력 중 하나라도 포함되면 solved
+		for (const FString& Input : CleanInputs)
+		{
+			if (Input.IsEmpty())
+				continue;
+
+			if (ContainsWholeWordKorean(Input, Keyword))
+			{
+				bSolved = true;
+				break;
+			}
+		}
+
+		if (!bSolved)
+		{
+			UnsolvedAnswerIndices.Add(i);
+		}
+	}
+
+	// 전부 맞춘 경우
+	if (UnsolvedAnswerIndices.Num() == 0)
+	{
+		OnHintArrived.Broadcast(HintKeyword);
+		return HintKeyword;
+	}
+
+	// 랜덤 선택
+	int32 RandomIndex =
+		FMath::RandHelper(UnsolvedAnswerIndices.Num());
+
+	int32 SelectedAnswerIndex =
+		UnsolvedAnswerIndices[RandomIndex];
+
+	const FCandidateAnswer& SelectedAnswer =
+		FoundDay->Answers[SelectedAnswerIndex];
+
+	HintKeyword = SelectedAnswer.Keyword;
+
+	OnHintArrived.Broadcast(HintKeyword);
+
+	return HintKeyword;
+}

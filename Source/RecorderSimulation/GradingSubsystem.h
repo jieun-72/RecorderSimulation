@@ -148,6 +148,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<FString> GetCandidateContexts(int32 DayIndex);
 
+	UFUNCTION(BlueprintCallable)
+	FString GetRandomCandidateHintKeyword(int32 DayIndex, const TArray<FString>& UserInputs);
+
 
 private:
 	const int32 SUCCESS_SCORE = 80;
