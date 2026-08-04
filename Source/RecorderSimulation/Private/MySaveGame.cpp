@@ -23,7 +23,7 @@ FString UMySaveGame::Req_SlotName_Implementation()
 	return CurrentSlotName;
 }
 
-void UMySaveGame::AddGatheredMemo_Implementation(const TArray<UTexture2D*>& NewMemoImages)
+void UMySaveGame::AddGatheredMemo_Implementation(const TArray<TSoftObjectPtr<UTexture2D>>& NewMemoImages)
 {
 	GatheredMemoList.Append(NewMemoImages);
 }
@@ -33,7 +33,7 @@ void UMySaveGame::SetInitGatheredMemo_Implementation()
 	GatheredMemoList.Empty();
 }
 
-TArray<UTexture2D*> UMySaveGame::Req_GatheredMemo_Implementation()
+TArray<TSoftObjectPtr<UTexture2D>> UMySaveGame::Req_GatheredMemo_Implementation()
 {
 	return GatheredMemoList;
 }

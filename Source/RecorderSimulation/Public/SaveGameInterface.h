@@ -48,13 +48,13 @@ public:
 	FString Req_SlotName();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SaveSystem")
-	void AddGatheredMemo(const TArray<UTexture2D*>& NewMemoImages);
+	void AddGatheredMemo(const TArray<TSoftObjectPtr<UTexture2D>>& NewMemoImages);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SaveSystem")
 	void SetInitGatheredMemo();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SaveSystem")
-	TArray<UTexture2D*> Req_GatheredMemo();
+	TArray<TSoftObjectPtr<UTexture2D>> Req_GatheredMemo();
 
 	// Gathered Memo
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SaveSystem")
