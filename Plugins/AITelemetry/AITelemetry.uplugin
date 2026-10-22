@@ -1,0 +1,13 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "Day 4 AI Telemetry",
+  "Description": "Records Day 4 AI movement and Perception, with optional contact-gap zone patrol bias.",
+  "EnabledByDefault": true,
+  "CanContainContent": false,
+  "Modules": [
+    { "Name": "AITelemetry", "Type": "Runtime", "LoadingPhase": "Default" },
+    { "Name": "AITelemetryEditor", "Type": "Editor", "LoadingPhase": "Default" }
+  ]
+}

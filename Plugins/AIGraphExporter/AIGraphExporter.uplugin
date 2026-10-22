@@ -1,0 +1,11 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "Read-only AI Graph Exporter",
+  "Description": "Exports Blueprint and Behavior Tree data to Saved/AIExports without saving assets.",
+  "Category": "Editor",
+  "EnabledByDefault": true,
+  "CanContainContent": false,
+  "Modules": [{ "Name": "AIGraphExporter", "Type": "Editor", "LoadingPhase": "Default" }]
+}
